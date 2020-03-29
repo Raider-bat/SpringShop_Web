@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+    <meta charset="UTF-8">
+    <title>SpringShop</title>
+    <link href="/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<nav class="navbar navbar-dark bg-primary navbar-expand-lg">
+    <a class="navbar-brand" th:href="@{/main}">SpringShop</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavDropdown">
+    </div>
+    <ul class="navbar-nav navbar-right">
+        <li class="nav-item active">
+            <a class="nav-link" href="#" th:href="@{/login}" th:unless="${user}">Вход</a>
+        </li>
+        <li class="nav-item dropdown active" th:if="${user}">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                [[${#httpServletRequest.remoteUser}]]
+            </a>
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
+                <a class="dropdown-item" href="/profile">Мой профиль</a>
+                <a class="dropdown-item" href="/cart">Корзина</a>
+                <div class="dropdown-divider"></div>
+                <form th:action="@{/logout}" method="post">
+                    <input type="submit" class="dropdown-item" value="Выход"/>
+                </form>
+            </div>
+        </li>
+    </ul>
+</nav>
+<div class="jumbotron jumbotron-fluid bg-danger text-white" th:if="${not saleProducts}">
+    <div class="container">
+        <h1 class="display-4">ВНИМАНИЕ</h1>
+        <p class="lead">Продажи временно пристановленны на неопределённый срок, возращайтесь позже</p>
+    </div>
+</div>
+<div class="container-fluid w-75 pt-5" style="background-color: #ebebeb;" th:if="${saleProducts}">
+    <ul class="nav">
+        <li class="nav-item">
+            <h6 class="text-black-50"> Сортировать по: </h6>
+        </li>
+        <li class="nav-item" style="padding-left: 20px;padding-bottom: 10px ">
+            <a class="btn btn-primary" th:href="@{'/main/'+${categoryId}+''(price='bottom')}" role="button">Возрастанию цены</a>
+        </li>
+        <li class="nav-item" style="padding-left: 20px; padding-bottom: 10px">
+            <a class="btn btn-primary" th:href="@{'/main/'+${categoryId}+''(price='top')}">Убыванию цены</a>
+        </li>
+    </ul>
+    <div class="row row-cols-1 row-cols-md-3 pt-4 bg-light" >
+        <div class="col mb-2 " th:each="product: ${productList}">
+            <div class="card">
+                <div class="card-body h-50">
+                    <h5 class="card-title" th:text="${product.getName()}"></h5>
+                    <p class="card-text" th:text="${product.getDescription()}" style="min-height: 400px"></p>
+                    <h5 class="text-right" th:text="${product.getPrice()} +' ТГ'"></h5>
+                    <div class="row">
+                        <div class="col">
+                            <form th:action="@{'/main/buyProduct'}" method="post">
+                                <input type="hidden" th:value="${product.getId()}" name="productId">
+                                <input type="hidden" th:value="${categoryId}" name="categoryId">
+                                <input type="hidden" th:value="${price}" name="price">
+<!--                                <input type="hidden" th:value="${productList.number}" name="page">-->
+                                <button type="submit" class="btn btn-primary p-1" th:if="${user}">В корзину</button>
+                            </form>
+                        </div>
+                        <div class="col" th:unless="${user}">
+                            Необходим вход
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+</body>
+</html>
